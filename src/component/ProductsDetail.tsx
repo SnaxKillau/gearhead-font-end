@@ -20,6 +20,9 @@ import './style.css';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import { motion } from "framer-motion"
 import { type } from 'os';
+import porches from "./image/porsche_918.png";
+import HorizontalScroll from './HorizontalScroll';
+
 
 type btnTriger ={
     destroyed : boolean
@@ -30,16 +33,20 @@ function ProductDetail() {
     const [detail , setDetail] = useState<boolean>(false)
     const [performance , setPerfromanc] = useState<boolean>(false)
     const [fuelText , setFuelText] = useState<boolean>(false)
+    const [buy ,setBuy] = useState<boolean>(false)
 
 
   return (
     <div >
-        <Navbar/>
-        <div className=' md:h-screen mt-24 border-t-2'>
+         <div className='bg-black h-14'>
+              <Navbar></Navbar>
+         </div>
+         <HorizontalScroll/>
+        <div className=' md:h-screen  border-t-2'>
     
               <div className=' grid grid-cols-1 md:grid-cols-3 md:mt-10 h-1/2'>
 
-              <div className=' md:col-span-2 h-1/2 m-10 shadow-sm p-5 shadow-red-800'>
+              <div className=' md:col-span-2 h-96 md:h-1/2 m-10 shadow-sm p-5 shadow-red-800'>
 
                     <Swiper
                         style={{
@@ -49,6 +56,7 @@ function ProductDetail() {
                         }}
                         spaceBetween={10}
                         navigation={true}
+                        autoplay={{ delay: 10 }}
                         // @ts-ignore */
                         thumbs={{swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null}}
                         modules={[FreeMode, Navigation, Thumbs]}
@@ -82,13 +90,29 @@ function ProductDetail() {
                     </Swiper>
                     </div>
                     <div className='ml-10 md:mt-10 md:ml-0'> 
-                      <h1 className=' text-lg font-Roboto opacity-50'>Porsche</h1>
-                      <h1 className=' text-2xl font-bold'>991 GT3 RS</h1>
-                      <h1 className=' text-sm font-Roboto'> 2023 Full Option</h1>
-                      <h1 className=' text-2xl  mt-10'>$ 320 ,000 </h1>
+                      <h1 className=' text-lg font-Fahkwang opacity-50'>Porsche</h1>
+                      <h1 className=' text-2xl font-Prosto'>991 GT3 RS</h1>
+                      <h1 className=' text-sm font-Pro'> 2023 Full Option</h1>
+                      <h1 className=' text-2xl  mt-10 font-Pro'>$ 320 ,000 </h1>
                       <div className=' grid grid-cols-4 mt-10'>
                       <div className=' col-span-3'>
-                          <button className=' w-full h-10 bg-black text-cyan-100 font-Kanit rounded-lg'>Add To Bag</button>  
+                          {buy ? <motion.img 
+                          initial = {{
+                            opacity : 10,
+                            x:0
+                          }}
+                          animate = {{
+                            x : 100,
+                            y: -290,
+                            opacity :0
+                          }}
+                          transition={{
+                            duration : 2
+                          }}
+                          onAnimationComplete={() => setBuy(false)}
+                          src = {porches} className=' w-16 absolute right-28'/> : null}
+                          <button className=' w-full h-10 bg-black text-cyan-100 font-Kanit rounded-lg' onClick={() => {setBuy(true)}}>Add To Bag</button>  
+                           
                       </div>
                       <div>
                       <button className='w-1/2 h-10 border-2 border-black flex justify-center items-center ml-2 rounded-lg'>
@@ -107,7 +131,7 @@ function ProductDetail() {
         </div>
            <div className=' ml-10 mb-10'>
                
-                    <button  className=' text-lg mb-5 font-WorkSans w-full text-start' onClick={() => {setDetail(!detail)}}>
+                    <button  className=' text-lg mb-5 font-Pro w-full text-start' onClick={() => {setDetail(!detail)}}>
                         THE DETAIL
                     </button>
             
@@ -137,7 +161,7 @@ function ProductDetail() {
             </div>
             
             <div className=' m-10 mb-20'>
-                <button onClick={() => {setPerfromanc(!performance)}} className=' text-lg mb-5 font-WorkSans w-full text-start'>
+                <button onClick={() => {setPerfromanc(!performance)}} className=' text-lg mb-5 font-Pro w-full text-start'>
                     PERFORMANCE
                 </button>
                
