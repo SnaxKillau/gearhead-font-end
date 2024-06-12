@@ -9,6 +9,9 @@ module.exports = {
         'infinite-scroll': 'infinite-scroll 25s linear infinite',
         'left-scroll' : 'left-scroll 15s linear infinite'
       },
+      backgroundImage: {
+        'custom-radial': 'linear-gradient(109.6deg, rgb(5, 85, 84) 11.2%, rgb(64, 224, 208) 91.1%)',
+      },
       keyframes: {
         'infinite-scroll': {
           from: { transform: 'translateX(0)' },
@@ -30,7 +33,7 @@ module.exports = {
       Pro : ['Be Vietnam Pro', 'serif'],
       Fahkwang : ['Fahkwang', 'sans-serif'],
       Prosto : ['Prosto One', 'sans-serif'],
-
+      MrDafoe: ['Mr Dafoe' , 'sans-serif']
     }
   },
   plugins: [],
