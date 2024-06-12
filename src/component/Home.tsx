@@ -23,15 +23,27 @@ import Notification from "./Notification";
 import Card from "./Card";
 import MobileCard from "./MobileCard";
 import BrandCard from "./BrandCard";
+import { Link } from "react-router-dom";
+import { fetchTop } from "../redux/action/TopTransformation"
+import { useDispatch, useSelector } from "react-redux";
+import { IRootState } from "./type/type";
+import { fetchBrand } from "../redux/action/BrandAction"
 
 type Hover = {
   hover: boolean;
 };
 function Home() {
-  const controls = useAnimation();
-  const finalNumber = 100;
-  const ref = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    dispatch(fetchTop())
+    dispatch(fetchBrand())
+  },[])
+
+  const data = useSelector((state: IRootState) => state.topTransformationReducer);
+  const brandData = useSelector((state: IRootState) => state.brandReducer)
+
+  const ref = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch<any>()
   const secRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: scrollYProgressRef } = useScroll({
     target: ref,
@@ -56,6 +68,7 @@ function Home() {
     setBtnHover(false);
   };
 
+  console.log(brandData)
   return (
     <div className="overflow-x-hidden">
       <FirstPage></FirstPage>
@@ -101,16 +114,16 @@ function Home() {
         </div>
         <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
             <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 animate-left-scroll">
-              {[1, 2, 3, 4 , 5].map((item) => (
-                <BrandCard item={item}/>
+              {brandData?.brand.map((item:any, index:number) => (
+                <BrandCard item={item} key = {index} image = {item.imagePath} name = {item.description}/>
               ))}
             </div>
           </div>
         <div className="flex justify-center items-center">
-              <button className=" text-[15px] border-b-2 border-yellow-400 hover:text-red-500 "
+              <Link to ="/brands" className=" text-[15px] border-b-2 border-yellow-400 hover:text-red-500 "
               >
                  View all brands
-              </button>
+              </Link>
         </div>
         <div className="mt-20 ml-20 mb-10 h-48 md:h-screen">
           <div className=" grid grid-cols-1 md:grid-cols-2">
@@ -118,71 +131,100 @@ function Home() {
               New in : Special Price with the high quality product
             </h1>
             <div className="md:flex justify-end align-middle hidden md:mr-20">
-              <button className=" border-2 border-black p-3 rounded-lg">
+             <Link to ="/brands">
+             <button className=" border-2 border-black p-3 rounded-lg">
                 See More
               </button>
+             </Link>
             </div>
           </div>
           <div className="flex overflow-x-scroll pb-10 hide-scroll-bar md:hidden">
             <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10">
-              {[1, 2, 3, 4].map((item) => (
-                <MobileCard item={item} price={10} available_unit={50} />
+              {data?.topTransfomation?.topTransformation?.map((e:any , index:number) => (
+                 <Link to = {`/detail/${e.id}`} key = {index}>
+                 <MobileCard brand = {e.brand} model = {e.model} image = {e.image[0]} price={e.price} available_unit={e.availableUnit} />
+                </Link>
               ))}
             </div>
           </div>
           <div className=" flex justify-center align-middle mr-20 md:hidden">
-            <button className=" border-2 border-black p-3 rounded-lg">
+           <Link to ="/brands">
+           <button className=" border-2 border-black p-3 rounded-lg">
               See More
             </button>
+           </Link>
           </div>
 
           <motion.div
             className="hidden h-screen mt-10 md:grid  md:grid-cols-3"
             ref={ref}
+            layout
             style={{
               scale: scaleProgress,
               opacity: scrollYProgressRef,
             }}
           >
-            <Card />
-            <Card price={12} />
+             {
+            data?.topTransfomation?.topTransformation?.map((e:any, index:number) => {
+              return(
+                <Link to ={`/detail/${e.id}`} key ={index} >
+                <Card brand = {e.brand} model = {e.model} image = {e.image[0]} year = {e.year} power = {e.power} price = {e.price} available_unit = {e.availableUnit} top_speed = {e.top_speed}/>
+               </Link>
+              )
+            })
+          }
           </motion.div>
         </div>
         <div className=" mt-64 md:mt-20 ml-20 mb-10 md:h-screen">
           <div className=" grid grid-cols-1 md:grid-cols-2">
             <h1 className=" font-Pro text-xl">
-              New in : Special Price with the high quality product
+              Budget : This products are affortable 
             </h1>
             <div className=" md:flex justify-end align-middle hidden md:mr-20">
+              <Link to ="/brands">
               <button className=" border-2 border-black p-3 rounded-lg">
                 See More
               </button>
+              </Link>
             </div>
           </div>
           <motion.div
             className=" h-screen mt-10 md:grid grid-cols-1 md:grid-cols-3 hidden"
             ref={secRef}
+            layout
             style={{
               scale: secScaleProgress,
               opacity: scrollYProgressSecRef,
             }}
           >
-            <Card></Card>
-            <Card></Card>
+              {
+            data?.topTransfomation?.budgetTransformation?.map((e:any, index:number) => {
+              return(
+                <Link to ={`/detail/${e.id}`} key ={index} >
+                <Card brand = {e.brand} model = {e.model} image = {e.image[0]} year = {e.year} power = {e.power} price = {e.price} available_unit = {e.availableUnit} top_speed = {e.top_speed}/>
+               </Link>
+              )
+            })
+          }
           </motion.div>
           <div className="flex overflow-x-scroll pb-10 hide-scroll-bar md:hidden">
             <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10">
-              {[1, 2, 3, 4].map((item) => (
-                <MobileCard item={item} price={10} available_unit={50} />
+              {data?.topTransfomation?.budgetTransformation?.map((e:any , index:number) => (
+                <Link to = {`/detail/${e.id}`} key = {index}>
+                    <MobileCard brand = {e.brand} model = {e.model} image = {e.image[0]} price={e.price} available_unit={e.availableUnit} />
+                </Link>
+
               ))}
             </div>
           </div>
         </div>
       </div>
       <div className=" flex justify-center align-middle md:hidden">
+        <Link to = "/brands">
         <button className=" border-2 border-black p-3 rounded-lg">
           See More
         </button>
+        </Link>
       </div>
       <div className=" text-center">
         <h1 className="font-Kanit text-4xl mt-5 md:mt-0">Create Account</h1>
@@ -191,9 +233,11 @@ function Home() {
           delivery, early sale access and more. The more you shop, the more you
           get.
         </h1>
-        <button className=" bg-black w-32 rounded-lg h-12 text-cyan-50 mt-4 mb-20 hover:bg-slate-600">
+       <Link to ='/signup'>
+       <button className=" bg-black w-32 rounded-lg h-12 text-cyan-50 mt-4 mb-20 hover:bg-slate-600">
           Create Account
         </button>
+       </Link>
       </div>
     </div>
   );

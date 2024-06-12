@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Navbar from './NavBar'
-import heart from "./image/heart.png"
+
 
 import porsche from "./image/back-porsche.jpeg"
 import porsche2 from "./image/porche911.jpeg"
@@ -22,23 +22,55 @@ import { motion } from "framer-motion"
 import { type } from 'os';
 import porches from "./image/porsche_918.png";
 import HorizontalScroll from './HorizontalScroll';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { addtoCart } from "../redux/action/CartAction"
+import { IRootState } from './type/type';
+import { useParams } from 'react-router-dom';
+import { imageApi } from "../redux/api/image";
+import { fetchTransformationDetail } from "../redux/action/TransfomationByBrandAction";
 
 type btnTriger ={
     destroyed : boolean
 } 
 function ProductDetail() {
-
+   const data = useSelector((state: IRootState ) => state.cartReducer)
+    const dispatch:any = useDispatch();
+    const param = useParams();
     const [thumbsSwiper, setThumbsSwiper] = useState<btnTriger>();
     const [detail , setDetail] = useState<boolean>(false)
     const [performance , setPerfromanc] = useState<boolean>(false)
     const [fuelText , setFuelText] = useState<boolean>(false)
     const [buy ,setBuy] = useState<boolean>(false)
-
-
+    const [num , setNum] = useState<number>(0)
+    const [mainClass , setMainClass] = useState<string>("h-[180vh] md:h-[180vh]")
+    const transfomationByBrand = useSelector(
+      (state: IRootState) => state.transformationDetailReducer
+    );
+    useEffect(() => {
+      dispatch(fetchTransformationDetail(param.id))
+    }, []);
+    
+    console.log(transfomationByBrand?.transforamtionDetail?.image)
+    const pushCart = () => {  
+      setBuy(true)
+      const someProduct = { id: transfomationByBrand?.transforamtionDetail?.id, brand: transfomationByBrand?.transforamtionDetail?.brand, model : transfomationByBrand?.transforamtionDetail?.model, color:transfomationByBrand?.transforamtionDetail?.color, condition:transfomationByBrand?.transforamtionDetail?.condition, price :transfomationByBrand?.transforamtionDetail?.price ,quatity : 1 , total : transfomationByBrand?.transforamtionDetail?.price, img : transfomationByBrand?.transforamtionDetail?.image[0] };
+      dispatch(addtoCart(someProduct));
+      console.log(data)
+      setNum(num+ 1)
+    }
+    const btnClick = () => {
+      setDetail(!detail)
+      setMainClass("h-[280vh] md:h-[200vh]")
+    }
+    const btnPerformanceClick = () => {
+      setPerfromanc(!performance)
+      setMainClass("h-[280vh] md:h-[200vh]")
+    }
+   
+    console.log(transfomationByBrand)
   return (
-    <div >
-         <div className='bg-black h-14'>
+    <div className={mainClass} >
+         <div className='bg-black h-20'>
               <Navbar></Navbar>
          </div>
          <HorizontalScroll/>
@@ -61,13 +93,17 @@ function ProductDetail() {
                         thumbs={{swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null}}
                         modules={[FreeMode, Navigation, Thumbs]}
                         className="mySwiper2"
-                    >
-                        <SwiperSlide>
-                        <img src={porsche} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                        <img src={porsche2} />
-                        </SwiperSlide>
+                    > 
+                      {
+                        transfomationByBrand?.transforamtionDetail?.image?.map((e:any) => {
+                          return (
+                            <SwiperSlide>
+                            <img src={imageApi + e} />
+                            </SwiperSlide>
+                          )
+                        })
+                      }
+                       
 
                         
                     </Swiper>
@@ -80,20 +116,23 @@ function ProductDetail() {
                         modules={[FreeMode, Navigation, Thumbs]}
                         className="mySwiper"
                     >
-                        <SwiperSlide>
-                        <img src={porsche} />
-                        </SwiperSlide>
-                        <SwiperSlide>
-                        <img src={porsche2} />
-                        </SwiperSlide>
+                        {
+                        transfomationByBrand?.transforamtionDetail?.image?.map((e:any) => {
+                          return (
+                            <SwiperSlide>
+                            <img src={imageApi + e} />
+                            </SwiperSlide>
+                          )
+                        })
+                      }
 
                     </Swiper>
                     </div>
                     <div className='ml-10 md:mt-10 md:ml-0'> 
-                      <h1 className=' text-lg font-Fahkwang opacity-50'>Porsche</h1>
-                      <h1 className=' text-2xl font-Prosto'>991 GT3 RS</h1>
-                      <h1 className=' text-sm font-Pro'> 2023 Full Option</h1>
-                      <h1 className=' text-2xl  mt-10 font-Pro'>$ 320 ,000 </h1>
+                      <h1 className=' text-lg font-Fahkwang opacity-50'>{transfomationByBrand?.transforamtionDetail?.brand}</h1>
+                      <h1 className=' text-2xl font-Prosto'>{transfomationByBrand?.transforamtionDetail.model}</h1>
+                      <h1 className=' text-sm font-Pro'> {transfomationByBrand?.transforamtionDetail.year} {transfomationByBrand?.transforamtionDetail.condition}</h1>
+                      <h1 className=' text-2xl  mt-10 font-Pro'>{transfomationByBrand?.transforamtionDetail?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</h1>
                       <div className=' grid grid-cols-4 mt-10'>
                       <div className=' col-span-3'>
                           {buy ? <motion.img 
@@ -111,13 +150,16 @@ function ProductDetail() {
                           }}
                           onAnimationComplete={() => setBuy(false)}
                           src = {porches} className=' w-16 absolute right-28'/> : null}
-                          <button className=' w-full h-10 bg-black text-cyan-100 font-Kanit rounded-lg' onClick={() => {setBuy(true)}}>Add To Bag</button>  
+
+                        
+                         {
+                          transfomationByBrand?.transforamtionDetail?.availableUnit > 0 ?
+                          <button className=' w-full h-10 bg-black text-cyan-100 font-Kanit rounded-lg' onClick={() => {pushCart()}}>Add To Bag</button>   :  <button className=' w-full h-10 bg-black text-cyan-100 font-Kanit rounded-lg' disabled = {true}>Out of Shock</button>
+                          
+                         }
                            
                       </div>
                       <div>
-                      <button className='w-1/2 h-10 border-2 border-black flex justify-center items-center ml-2 rounded-lg'>
-                            <img src = {heart} className=' w-5'/>
-                          </button>
                       </div>
 
                          
@@ -129,14 +171,14 @@ function ProductDetail() {
            
 
         </div>
-           <div className=' ml-10 mb-10'>
+           <div className=' ml-10 mb-10 mt-10 md:mt-0'>
                
-                    <button  className=' text-lg mb-5 font-Pro w-full text-start' onClick={() => {setDetail(!detail)}}>
+                    <button  className=' text-lg mb-5 font-Pro w-full text-start' onClick={() => {btnClick()}}>
                         THE DETAIL
                     </button>
             
                 {  detail ? <motion.div
-                className=' mb-5 w-11/12'
+                className=' mb-5 w-[87%]'
                  initial = {{
                     opacity : 0
                   }}
@@ -149,19 +191,19 @@ function ProductDetail() {
                   }}>
                    <h1 className=' font-bold text-xl'>Overview</h1>
                   <h1>
-                  Sports-car specialist Porsche has been crafting impossibly delicious 911 models for decades, but the 2024 911 GT3 and GT3 RS models are its most uncompromised and outrageously quick versions to date. These track-day champs are powered by a naturally aspirated 4.0-liter six-cylinder engine that howls to a 9000 rpm redline. In GT3 guise, the flat-six makes 502 horsepower, but go for the GT3 RS or S/T and it gets juiced to 518 ponies. Parked next to a standard 911, the GT3 models look like entirely different cars, especially the RS, which wears wild aero elements including a giant rear wing
+                  {transfomationByBrand?.transforamtionDetail?.descriptions}
                   </h1>
                   
                   
                   </motion.div> :null}
-                  <div className=' w-11/12 h-[2px] bg-gradient-to-bl from-zinc-300 to-sky-900' />
+                  <div className=' w-[88%] h-[2px] bg-gradient-to-bl from-zinc-300 to-sky-900' />
                   
                   
                 
             </div>
             
             <div className=' m-10 mb-20'>
-                <button onClick={() => {setPerfromanc(!performance)}} className=' text-lg mb-5 font-Pro w-full text-start'>
+                <button onClick={() => {btnPerformanceClick()}} className=' text-lg mb-5 font-Pro w-full text-start'>
                     PERFORMANCE
                 </button>
                
@@ -187,7 +229,7 @@ function ProductDetail() {
                                 <div className=' grid grid-cols-2'>
                                     <img src={gas} className='w-10 mt-2 border-[2px] border-black p-2 rounded-full'/>
                                     <div>
-                                        <h1>13,4</h1>
+                                        <h1>{transfomationByBrand?.transforamtionDetail?.mpg}</h1>
                                         <h1>1/100 km</h1>
                                     </div>
                                 </div>                         
@@ -195,7 +237,7 @@ function ProductDetail() {
                                 <div className=' grid grid-cols-2 md:ml-5'>
                                     <img src={co} className='w-10 mt-2 mr-6'/>
                                     <div>
-                                        <h1>305</h1>
+                                        <h1>{transfomationByBrand?.transforamtionDetail?.co2}</h1>
                                         <h1> g/km</h1>
                                     </div>                
                                 </div>
@@ -205,15 +247,15 @@ function ProductDetail() {
                         <div className=' md:col-span-2 md:ml-20 mt-10 md:mt-0'>
                             
                                 <div className='flex border-b-[3px]'>
-                                    <h1 className=' font-bold text-2xl pb-2'>365 kw</h1>
+                                    <h1 className=' font-bold text-2xl pb-2'>{transfomationByBrand?.transforamtionDetail?.power} kw</h1>
                                      <h1 className=' ml-12 mt-2'>Power(kW)</h1>
                                 </div>
                                 <div className='flex border-b-[3px]'>
-                                    <h1 className=' font-bold text-2xl pb-2' >3,2s</h1>
+                                    <h1 className=' font-bold text-2xl pb-2' >{transfomationByBrand?.transforamtionDetail?.acceleration}</h1>
                                      <h1 className='ml-12 mt-2'>Acceleration 0- 100 km/h</h1>
                                 </div>
                                 <div className='flex pb-2'>
-                                    <h1 className=' font-bold text-2xl'>296 km/h</h1>
+                                    <h1 className=' font-bold text-2xl'>{transfomationByBrand?.transforamtionDetail?.top_speed} km/h</h1>
                                      <h1 className='ml-12 mt-2'>Top speed</h1>
                                 </div>
                             </div>
@@ -233,8 +275,8 @@ function ProductDetail() {
                         duration : 1
                       }}
                    >
-                     <h1 className=' font-bold'>Fuel consumption combined: 13,4 l/100 km</h1>
-                     <h1 className=' font-bold'>CO2-emissions combined (WLTP): 305 g/km</h1>
+                     <h1 className=' font-bold'>Fuel consumption combined: {transfomationByBrand?.transforamtionDetail?.mpg} l/100 km</h1>
+                     <h1 className=' font-bold'>CO2-emissions combined (WLTP): {transfomationByBrand?.transforamtionDetail?.co2} g/km</h1>
                    </motion.div>
 
              
@@ -242,9 +284,6 @@ function ProductDetail() {
                 </motion.div> : null}
           
                 <div className=' w-11/12 h-[2px] bg-gradient-to-bl from-zinc-300 to-sky-900' />
-            </div>
-            <div className=' h-20 '>
-
             </div>
          
           

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import flag from "./image/blackwhite_flag.webp"
-import { motion, useAnimation} from "framer-motion"
+import { motion} from "framer-motion"
+import { Link } from 'react-router-dom';
 
 function Notification() {
 
@@ -11,7 +12,8 @@ function Notification() {
       };
 
   return (
-    <motion.div 
+   <Link to ="/notification">
+     <motion.div 
     initial={{ x :500, opacity: 0 }}
     animate={{ x: 0, opacity: 0.8 }}
     transition={{ duration: 1, delay: 2.1 }}
@@ -27,7 +29,9 @@ function Notification() {
             transition={{ duration: 4 , delay: 3.1 }}
             onAnimationComplete={onAnimationComplete}
             />
+         
     </motion.div>
+   </Link>
   )
 }
 
